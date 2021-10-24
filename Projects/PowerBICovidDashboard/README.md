@@ -1,4 +1,4 @@
-# My fancy project
+# PowerBICovidDashboard
 
 
 ## Description
@@ -20,5 +20,3 @@ TODO How to run and test application localy
 
 - Microsoft SQL server
 - Python
-- Plotly
-- Pandas
