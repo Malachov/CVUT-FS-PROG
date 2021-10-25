@@ -1,4 +1,4 @@
-# PowerBICovidDashboard
+# Vejrazka_PowerBICovidDashboard
 
 
 ## Description
