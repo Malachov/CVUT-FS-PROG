@@ -3,7 +3,7 @@
 
 ## Description
 
-This application periodically load a csv file from local disc by the test bench, and if any changes it will update the database. There is also a simple web application where data are plotted.
+This is interactive dashboard that describe actual as well as historical covid situation in Czech Republic.
 
 
 ## Links
