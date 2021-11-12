@@ -14,10 +14,13 @@ for root, dirs, files in os.walk("data"):
         if mtime > ago:
             # analyze.analyze_threshold(path)
             print("%s modified %s" % (path, mtime))
-            col_list = ["teplota"]
-            df = pd.read_csv(path, index_col=None, header=0, usecols=col_list)
+            # col_list = ["teplota"]
+            df = pd.read_csv(path, index_col=None, header=0)
             li = li.append(df, ignore_index=True)
 
 # frame = pd.concat(li, axis=0, ignore_index=True)
-li.reset_index()
+li.set_index("id", drop=True, inplace=True)
 li.to_csv("data/analyze.csv")
+
+maximum = li["teplota"].max()
+minimum = li["teplota"].min()

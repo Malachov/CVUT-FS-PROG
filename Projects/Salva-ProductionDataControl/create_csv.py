@@ -16,5 +16,5 @@ ids = np.random.randint(low=1e6, high=1e7, size=100)
 df["id"] = df["jmeno"]
 df["id"] = ids
 
-df.set_index("id", drop=True, inplace=True)
+
 df.to_csv("data/data_linka2.csv")
