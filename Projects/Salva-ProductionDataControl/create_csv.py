@@ -16,6 +16,5 @@ ids = np.random.randint(low=1e6, high=1e7, size=100)
 df["id"] = df["jmeno"]
 df["id"] = ids
 
-df.to_csv(
-    r"C:\Users\ondre\Desktop\ČVUT\NMG\Programování\CVUT-FS-PROG\Projects\Salva-ProductionDataControl/data/data_linka.csv"
-)
+
+df.to_csv("data/data_linka2.csv")
