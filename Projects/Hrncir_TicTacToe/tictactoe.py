@@ -189,7 +189,7 @@ for r in range(3):
         ls_buttons[r][c].grid(row=r, column=c, sticky="snew")
 
 # AI setting
-frm_footer = tk.Frame(master=window, bg="yellow")
+frm_footer = tk.Frame(master=window)
 frm_footer.rowconfigure(0, weight=1, minsize=10)
 frm_footer.columnconfigure([0, 1], weight=20, minsize=10)
 frm_footer.pack(fill=tk.BOTH, side=tk.TOP)
