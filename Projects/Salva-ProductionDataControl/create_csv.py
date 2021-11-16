@@ -18,4 +18,4 @@ df["id"] = df["jmeno"]
 df["id"] = ids
 
 df.set_index("id", drop=True, inplace=True)
-df.to_csv("data/data_linka1.csv")
+df.to_csv("data/data_linka2.csv")

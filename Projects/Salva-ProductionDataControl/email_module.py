@@ -1,21 +1,23 @@
-import smtplib, ssl
-import os
+def send_email(user, pwd, recipient, subject, body):
+    import smtplib
 
-port = 465  # For SSL
-smtp_server = "smtp.gmail.com"
-sender_email = "my@gmail.com"  # Enter your address
-receiver_email = "your@gmail.com"  # Enter receiver address
-password = os.environ["DATACONTROLEMAIL"]
-message = """\
-Subject: Hi there
+    FROM = user
+    TO = recipient if isinstance(recipient, list) else [recipient]
+    SUBJECT = subject
+    TEXT = body
 
-This message is sent from Python."""
+    # Prepare actual message
+    message = """From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (
+        FROM,
+        ", ".join(TO),
+        SUBJECT,
+        TEXT,
+    )
 
-context = ssl.create_default_context()
-with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-    server.login(sender_email, password)
-    server.sendmail(sender_email, receiver_email, message)
-
-
-def send_email(message):
-    pass
+    server = smtplib.SMTP("smtp.gmail.com:587")
+    server.ehlo()
+    server.starttls()
+    server.login(user, pwd)
+    server.sendmail(FROM, TO, message)
+    server.close()

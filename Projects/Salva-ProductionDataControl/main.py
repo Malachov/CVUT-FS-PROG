@@ -29,16 +29,24 @@ minimum = dff["teplota"].min()
 dff_max_alert = dff[dff.teplota > max_nastavene]
 dff_min_alert = dff[dff.teplota < min_nastavene]
 
+# odesilani emailu
+sender = os.environ.get("EMAIL_USER")
+password = os.environ.get("EMAIL_PASS")
+send_to = "ondrejsalva@gmail.com"
+mail_subject = "Zavada na lince"
+
 email_message = f"""
-Dobry den...
+Dobry den,
+
+kontrolovane hodnoty na vyrobni lince presahly maximalni povolene hodnoty v techto pripadech:
 
 {dff_max_alert}
+
+Naopak hodnoty nizsi nez dovolene minimum byly namereny v techto pripadech:
+{dff_min_alert}
+
+Prosime o kontrolu linky
 """
-email_module.send_email(email_message)
+email_module.send_email(sender, password, send_to, mail_subject, email_message)
 
 # TODO append to historical data
-
-
-# dff_min_alert
-
-# if maximum > max_nastavene:
