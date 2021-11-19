@@ -4,11 +4,12 @@ import pandas as pd
 import email_module
 
 max_nastavene = 26
-min_nastavene = 15
+min_nastavene = 16
 
 now = dt.datetime.now()
 ago = now - dt.timedelta(days=1)
 dff = pd.DataFrame()
+historical_data = pd.DataFrame()
 
 for root, dirs, files in os.walk("data"):
     for fname in files:
@@ -49,4 +50,6 @@ Prosime o kontrolu linky
 """
 email_module.send_email(sender, password, send_to, mail_subject, email_message)
 
-# TODO append to historical data
+# sdruzovani chybovych hodnot do dataframe
+historical_data = historical_data.append(dff_max_alert)
+historical_data = historical_data.append(dff_min_alert)
