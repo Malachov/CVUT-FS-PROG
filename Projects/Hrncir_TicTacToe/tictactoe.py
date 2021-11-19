@@ -1,12 +1,18 @@
 import tkinter as tk
 import random as rd
+import playersAI
 
-players = ['X', 'O']
-player = rd.choice(players)
+WINSIZE = 3
 
-ls_buttons = [[0, 0, 0],
-              [0, 0, 0],
-              [0, 0, 0]]
+
+def get_board(buttons):
+    board = []
+    for r in buttons:
+        row = []
+        for btn in r:
+            row.append(btn["text"])
+        board.append(row)
+    return board
 
 
 def btn_press(row_index, col_index):
@@ -18,6 +24,11 @@ def btn_press(row_index, col_index):
                 lbl_turn.config(text=f"Player [{player}] is WINNER!")
             elif emty_spaces():
                 lbl_turn.config(text=f"It's DRAW!")
+            elif aiSwitch == True:
+                moveAI = playerAI.move(get_board(ls_buttons))
+                ls_buttons[moveAI[0]][moveAI[1]]["text"] = players[1]
+                if win_check():
+                    lbl_turn.config(text=f"Player [{players[1]}] is WINNER!")
             else:
                 player = players[1]
                 lbl_turn.config(text=f"Player [{player}] turn!")
@@ -27,6 +38,11 @@ def btn_press(row_index, col_index):
                 lbl_turn.config(text=f"Player [{player}] is WINNER!")
             elif emty_spaces():
                 lbl_turn.config(text=f"It's DRAW!")
+            elif aiSwitch == True:
+                moveAI = playerAI.move(get_board(ls_buttons))
+                ls_buttons[moveAI[0]][moveAI[1]]["text"] = players[0]
+                if win_check():
+                    lbl_turn.config(text=f"Player [{players[0]}] is WINNER!")
             else:
                 player = players[0]
                 lbl_turn.config(text=f"Player [{player}] turn!")
@@ -39,8 +55,7 @@ def check_list(data):
         for button in r:
             if first_btn == button["text"] and first_btn != "":
                 count += 1
-        if count == 3:
-            #print("sm is winner H")
+        if count == WINSIZE:
             for btn in r:
                 btn.config(bg="green")
             return True
@@ -67,12 +82,10 @@ def win_check():
         return True
     # diagonal
     elif ls_buttons[0][0]["text"] == ls_buttons[1][1]["text"] == ls_buttons[2][2]["text"] != "":
-        #print("sm is winner D")
         for i in range(3):
             ls_buttons[i][i].config(bg="green")
         return True
     elif ls_buttons[0][2]["text"] == ls_buttons[1][1]["text"] == ls_buttons[2][0]["text"] != "":
-        #print("sm is winner D")
         for i, j in zip(range(0, 3), range(2, -1, -1)):
             ls_buttons[i][j].config(bg="green")
         return True
@@ -94,12 +107,46 @@ def emty_spaces():
 
 def new_game():
     global player
-    player = rd.choice(players)
+    if aiSwitch == False:
+        player = rd.choice(players)
+    elif aiSwitch == True:
+        player = players[0]
     lbl_turn.config(text=f"Player [{player}] turn!")
     for r in range(3):
         for c in range(3):
             ls_buttons[r][c].config(text="", bg="#F0F0F0")
 
+
+def ai_settings():
+    global aiSwitch, playerAI
+    if aiSwitch == False:
+        option = value_inside.get()
+        for i in range(len(ls_playersAI)):
+            if option == options_list[i]:
+                playerAI = ls_playersAI[i]
+                aiSwitch = True
+                new_game()
+                btn_AI_on_off.config(text="OFF")
+    elif aiSwitch == True:
+        aiSwitch = False
+        new_game()
+        btn_AI_on_off.config(text="ON")
+        value_inside.set("AI settings:")
+
+
+players = ['X', 'O']
+player = players[0]
+# AI
+aiSwitch = False
+pEasy = playersAI.Player('O', 'X')
+pMedium = playersAI.PlayerMax('O', 'X')
+pHard = playersAI.PlayerBlocker('O', 'X')
+ls_playersAI = [pEasy, pMedium, pHard]
+playerAI = ls_playersAI[1]
+
+ls_buttons = [[0, 0, 0],
+              [0, 0, 0],
+              [0, 0, 0]]
 
 # Desktop window
 window = tk.Tk()
@@ -140,6 +187,19 @@ for r in range(3):
                                      height=5,
                                      command=lambda row=r, column=c: btn_press(row, column))
         ls_buttons[r][c].grid(row=r, column=c, sticky="snew")
+
+# AI setting
+frm_footer = tk.Frame(master=window)
+frm_footer.rowconfigure(0, weight=1, minsize=10)
+frm_footer.columnconfigure([0, 1], weight=20, minsize=10)
+frm_footer.pack(fill=tk.BOTH, side=tk.TOP)
+options_list = ["Easy", "Medium", "Hard"]
+value_inside = tk.StringVar(master=frm_footer)
+value_inside.set("Settings AI:")
+option_AI = tk.OptionMenu(frm_footer, value_inside, *options_list)
+option_AI.grid(row=0, column=0, sticky="w")
+btn_AI_on_off = tk.Button(master=frm_footer, text="ON", command=ai_settings)
+btn_AI_on_off.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
 
 window.mainloop()
