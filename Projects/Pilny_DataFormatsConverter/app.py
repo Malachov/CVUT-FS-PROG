@@ -8,12 +8,14 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description="Calculate volume of a Cylinder")
 group1 = parser.add_mutually_exclusive_group()
-group1.add_argument("-c1", "--csv_file1", type=open, help="Address of the csv file 1.")
-group1.add_argument("-s1", "--sql_file1", type=str, help="Address of the sql database 1.")
+group1.add_argument("-c1", "--csv_file1", type=open, help="Address of the first csv file.")
+group1.add_argument("-s1", "--sql_file1", type=str, help="Address of the first sql database.")
+group1.add_argument("-p1", "--parquet_file1", type=str, help="Address of the first parquet database.")
 # group1.add_argument("-e1", "--xlsx_file1", type=open, help="Address of the xlsx file 1")
 group2 = parser.add_mutually_exclusive_group()
-group2.add_argument("-c2", "--csv_file2", type=open, help="Address of the csv file 2.")
-group2.add_argument("-s2", "--sql_file2", type=str, help="Address of the sql database 2.")
+group2.add_argument("-c2", "--csv_file2", type=open, help="Address of the second csv file.")
+group2.add_argument("-s2", "--sql_file2", type=str, help="Address of the second sql database.")
+group2.add_argument("-p2", "--parquet_file2", type=str, help="Address of the second parquet database.")
 # group2.add_argument("-e2", "--xlsx_file2", type=open, help="Address of the xlsx file 2")
 parser.add_argument("-d1", "--dat_name1", type=str, help="Name of database 1.")
 parser.add_argument("-d2", "--dat_name2", type=str, help="Name of database 2.")
@@ -56,11 +58,15 @@ dat_name1 = args.dat_name1
 sql_file1 = args.sql_file1
 dat_name2 = args.dat_name2
 sql_file2 = args.sql_file2
-
+parquet_file1 = args.parquet_file1
+parquet_file2 = args.parquet_file2
 ## Loading data 1
 
 if args.csv_file1:
     df1 = pd.read_csv(args.csv_file1)
+    print(df1)
+elif args.parquet_file1:
+    df1 = pd.read_parquet(parquet_file1)
     print(df1)
 # elif args.xlsx_file1:
 #     df1 = pd.read_excel(excel_file1)
@@ -88,10 +94,13 @@ else:
 if args.csv_file2:
     df2 = pd.read_csv(args.csv_file2)
     print(df2)
+elif args.parquet_file2:
+    df2 = pd.read_parquet(parquet_file2)
+    print(df2)
 # elif args.xlsx_file2:
 #     df1 = pd.read_excel(excel_file2)
 #     print(df1)
-if args.dat_name2:
+elif args.dat_name2:
     if args.sql_file2:
         df2 = mydatapreprocessing.database.database_load(
             server=".", database=dat_name2, query=sql_file2, trusted_connection=True
