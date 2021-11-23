@@ -72,8 +72,8 @@ def check_data():
 
 
 if __name__ == "__main__":
-    schedule.every(1).minutes.do(check_data)
-    # schedule.every().day.at("10:30").do(check_data)
+    # schedule.every(1).minutes.do(check_data)
+    schedule.every().day.at("10:30").do(check_data)
 
     while 1:
         schedule.run_pending()
