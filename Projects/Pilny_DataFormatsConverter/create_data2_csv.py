@@ -41,3 +41,4 @@ df.loc[df["Stroj"] == 4, "Stroj"] = "Stroj2"
 
 df.to_csv("data/data2.csv", index=False)
 df.to_excel("data/data2.xlsx", index=False)
+df.to_parquet("data/data2.parquet", index=False)
