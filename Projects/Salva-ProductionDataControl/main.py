@@ -3,13 +3,16 @@ import datetime as dt
 import pandas as pd
 import email_module
 
+# nastaveni pozadovanych limitnich hodnot
 max_nastavene = 26
-min_nastavene = 15
+min_nastavene = 16
 
 now = dt.datetime.now()
 ago = now - dt.timedelta(days=1)
 dff = pd.DataFrame()
+historical_data = pd.DataFrame()
 
+# prohledavani slozky data pro soubory stare maximalne 1 den
 for root, dirs, files in os.walk("data"):
     for fname in files:
         path = os.path.join(root, fname)
@@ -18,7 +21,7 @@ for root, dirs, files in os.walk("data"):
         if mtime > ago:
             print("%s modified %s" % (path, mtime))
             df = pd.read_csv(path, index_col=None, header=0)
-            dff = dff.append(df, ignore_index=True)
+            dff = dff.append(df, ignore_index=True)  # pripisovani dovych souboru do spolecneho dataframe
 
 dff.set_index("id", drop=True, inplace=True)
 dff.to_csv("data/analyze.csv")
@@ -26,6 +29,7 @@ dff.to_csv("data/analyze.csv")
 maximum = dff["teplota"].max()
 minimum = dff["teplota"].min()
 
+# vytvoreni dataframe z hodnot, ktere se nachazeji mimo zadany interval
 dff_max_alert = dff[dff.teplota > max_nastavene]
 dff_min_alert = dff[dff.teplota < min_nastavene]
 
@@ -47,6 +51,16 @@ Naopak hodnoty nizsi nez dovolene minimum byly namereny v techto pripadech:
 
 Prosime o kontrolu linky
 """
-email_module.send_email(sender, password, send_to, mail_subject, email_message)
 
-# TODO append to historical data
+# podminka pro odeslani emailu
+if maximum > max_nastavene:
+    email_module.send_email(sender, password, send_to, mail_subject, email_message)
+
+elif minimum < min_nastavene:
+    email_module.send_email(sender, password, send_to, mail_subject, email_message)
+else:
+    pass
+
+# sdruzovani chybovych hodnot do dataframe
+historical_data = historical_data.append(dff_max_alert)
+historical_data = historical_data.append(dff_min_alert)

@@ -115,6 +115,8 @@ def new_game():
     for r in range(3):
         for c in range(3):
             ls_buttons[r][c].config(text="", bg="#F0F0F0")
+    if aiStart == True:
+        ls_buttons[rd.randint(0, 2)][rd.randint(0, 2)]["text"] = players[1]
 
 
 def ai_settings():
@@ -134,6 +136,16 @@ def ai_settings():
         value_inside.set("AI settings:")
 
 
+def who_start():
+    global aiStart
+    if aiStart == False:
+        aiStart = True
+        btn_who_first.config(text="AI starts!")
+    else:
+        aiStart = False
+        btn_who_first.config(text="You starts!")
+
+
 players = ['X', 'O']
 player = players[0]
 # AI
@@ -141,16 +153,20 @@ aiSwitch = False
 pEasy = playersAI.Player('O', 'X')
 pMedium = playersAI.PlayerMax('O', 'X')
 pHard = playersAI.PlayerBlocker('O', 'X')
-ls_playersAI = [pEasy, pMedium, pHard]
+pExtreme = playersAI.PlayerMinimax('O', 'X')
+ls_playersAI = [pEasy, pMedium, pHard, pExtreme]
 playerAI = ls_playersAI[1]
 
 ls_buttons = [[0, 0, 0],
               [0, 0, 0],
               [0, 0, 0]]
+# player/AI start
+aiStart = False
 
 # Desktop window
 window = tk.Tk()
 window.title("Tic - Tac - Toe")
+# window.iconbitmap('myicon.ico')
 
 # Menu
 lbl_title = tk.Label(master=window,
@@ -191,13 +207,16 @@ for r in range(3):
 # AI setting
 frm_footer = tk.Frame(master=window)
 frm_footer.rowconfigure(0, weight=1, minsize=10)
-frm_footer.columnconfigure([0, 1], weight=20, minsize=10)
+frm_footer.columnconfigure([0, 1, 2], weight=20, minsize=10)
 frm_footer.pack(fill=tk.BOTH, side=tk.TOP)
-options_list = ["Easy", "Medium", "Hard"]
+options_list = ["Easy", "Medium", "Hard", "Extreme"]
 value_inside = tk.StringVar(master=frm_footer)
 value_inside.set("Settings AI:")
 option_AI = tk.OptionMenu(frm_footer, value_inside, *options_list)
 option_AI.grid(row=0, column=0, sticky="w")
+btn_who_first = tk.Button(
+    master=frm_footer, text="You starts!", command=who_start)
+btn_who_first.grid(row=0, column=1, padx=5, pady=5, sticky="e")
 btn_AI_on_off = tk.Button(master=frm_footer, text="ON", command=ai_settings)
 btn_AI_on_off.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
