@@ -32,3 +32,4 @@ df["Id"] = ids
 
 df.to_csv("data/data1.csv", index=False)
 df.to_excel("data/data1.xlsx", index=False)
+df.to_parquet("data/data1.parquet", index=False)
