@@ -1,5 +1,5 @@
 import pandas as pd
-from program import RobotOrders
+from robot import Robot
 
 
 def findtab(tabulka, cisloradku):
@@ -11,6 +11,15 @@ def findtab(tabulka, cisloradku):
     vysledek = seznam.loc[cisloradku, "nazev"]
     return vysledek
 
+print("spousteni programu v zakladnim nastaveni")
+prikaz=Robot("010001")
+prikaz.run()
+prikaz=Robot("020001")
+prikaz.run()
+prikaz=Robot("030001")
+prikaz.run()
+prikaz=Robot("040002")
+prikaz.run()
 
 while True:
     scan = input("Zadej sestimistny kod:")
@@ -25,26 +34,11 @@ while True:
     elif len(scan) != 6:
         print("Spatny format cisla!")
     else:
-        print("To by mohlo jit")
+        #print("To by mohlo jit")
+        prikaz=Robot(scan)
+        prikaz.run()
 
-        trida = scan[:2]
-        # vzhledani tridy pomoci fce find
-        check = pd.read_csv("program/main.csv", index_col=None, dtype=str)
-        if (check.index == trida).any():
-            print("Tato trida neexistuje!")
-        else:
-            sekundar = findtab("program/main.csv", trida)
-            print(sekundar)
-            print(scan[2:])
-
-            check = pd.read_csv("program/" + sekundar + ".csv", index_col=None, dtype=str)
-            if (check.index == sekundar).any():
-                print("Tento prikaz neexistuje!")
-            else:
-                prikaz = findtab("program/" + sekundar + ".csv", scan[2:])
-                print(prikaz)
-                if prikaz[:2] == "00":
-                    prikaz[2:] + "()"
+        
 
 
 print("Program byl uspesne ukoncen")

@@ -1,10 +1,16 @@
-#knihovna programu pro scanner_change.csv
-import pandas as pd
+class Kotatko:
+    def __init__(self, jmeno):
+        self.jmeno = jmeno
+    def barva(self, barva):
+        self.barva=barva
 
+    def zamnoukej(self):
+        print(f"{self.jmeno}: Mňau!")
 
-def save_start(kod):
-    save_info=pd.DataFrame({"nazev":[]},{"id":[]})
-    print(save_info)
+    def snez(self, jidlo):
+        print(f"{self.jmeno}: Mňau mňau! {jidlo} mi chutná!")
 
-save_start(None)
+mourek = Kotatko("mourek")
+mourek.zamnoukej()
 
+a=8
