@@ -5,7 +5,8 @@
 
 import pandas as pd
 
-def findtab(tabulka, cisloradku):
+
+def find_tab(tabulka, cisloradku) -> str:
     # funkce hleda v danem souboru csv
     # vstup = nazev souboru, cislo radku
     # vystup = hodnota na hledanem radku
@@ -13,32 +14,35 @@ def findtab(tabulka, cisloradku):
     seznam.set_index("id", inplace=True)
     if (seznam.index == cisloradku).any():
         vysledek = seznam.loc[cisloradku, "nazev"]
-        
+
+        return vysledek
+
     else:
-        print ("Chybi zaznam o tomto prikazu!")
-        vysledek = None
-    return vysledek
+        raise FileNotFoundError("Chybi zaznam o tomto prikazu!")
+
 
 def scanner_change(kod):
-    setup = findtab("program/scanner_change.csv", kod)
-    print("nastaveni zmeneno na " + setup )
-    
+    setup = find_tab("program/scanner_change.csv", kod)
+    print("nastaveni zmeneno na " + setup)
+
     return setup
 
 
 def ref_point_change(kod):
-    setup = findtab("program/ref_point_change.csv", kod)
-    print("nastaveni zmeneno na " + setup )
-    
+    setup = find_tab("program/ref_point_change.csv", kod)
+    print("nastaveni zmeneno na " + setup)
+
     return setup
 
-def gripper_change(kod):
-    gripper = findtab("program/gripper_change.csv", kod)
-    #if gripper == None:
 
-    print("gripper zmenen na " + gripper )
-    
+def gripper_change(kod):
+    gripper = find_tab("program/gripper_change.csv", kod)
+    # if gripper == None:
+
+    print("gripper zmenen na " + gripper)
+
     return gripper
+
 
 def recording(kod):
     if kod == "0001":
@@ -48,27 +52,20 @@ def recording(kod):
         nahravani = False
         print("nahravani vypnuto")
     else:
-        print ("neznamy kod pro nahravani")
-    
+        print("neznamy kod pro nahravani")
+
     return nahravani
 
 
 class Robot:
-    def __init__(self, CODE="Default") -> None:
-        self.CODE = CODE
+    def __init__(self) -> None:
+        self._config_me = 8
+        pass
 
-        self.function_part = self.CODE[0:2]
-        self.parameter_1_part = self.CODE[2:6]
-
-        function_name = self.orders_dict[self.function_part]
-        self.used_function = self.function_dict[function_name]
-
-        self.attribute=self.attribute_dict[function_name]
-
-        #self.recording=recording("0002")
-        #self.gripper=gripper_change("0001")
-        #self.scanner=scanner_change("0001")
-        #self.ref_point=ref_point_change("0001")
+        # self.recording=recording("0002")
+        # self.gripper=gripper_change("0001")
+        # self.scanner=scanner_change("0001")
+        # self.ref_point=ref_point_change("0001")
 
     orders_dict = {
         "01": "scanner_change",
@@ -92,17 +89,18 @@ class Robot:
     }
 
     def run(self):
-        self.used_function(self.parameter_1_part)
+        setattr(self, self.attribute, self.used_function(self.parameter_1_part))
+
+    def change_configuration(self, CODE):
+        self.CODE = CODE
+
+        self.function_part = self.CODE[0:2]
+        self.parameter_1_part = self.CODE[2:6]
+
+        self.function_name = self.orders_dict[self.function_part]
+        self.used_function = self.function_dict[self.function_name]
+
+        self.attribute = self.attribute_dict[self.function_name]
 
 
-#robot_orders = Robot("01")
-#robot_orders_2 = Robot("02")
-vozitko = Robot ("030008")
-vozitko.run()
-#testovani2 = Robot ("040001")
-
-#testovani2.run()
-#robot_orders.run()
-
-
-a = 8
+robot = Robot()

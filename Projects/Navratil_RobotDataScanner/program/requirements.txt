@@ -1,1 +1,2 @@
-NumPy
+numpy
+mypythontools

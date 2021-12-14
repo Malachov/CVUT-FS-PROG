@@ -1,44 +1,38 @@
 import pandas as pd
-from robot import Robot
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, Path(__file__).parent.as_posix())
+
+from robot import robot
 
 
-def findtab(tabulka, cisloradku):
-    # funkce hleda v danem souboru csv
-    # vstup = nazev souboru, cislo radku
-    # vystup = hodnota na hledanem radku
-    seznam = pd.read_csv(tabulka, index_col=None, dtype=str)  # header=None,
-    seznam.set_index("id", inplace=True)
-    vysledek = seznam.loc[cisloradku, "nazev"]
-    return vysledek
+if __name__ == "__main__":
 
-print("spousteni programu v zakladnim nastaveni")
-prikaz=Robot("010001")
-prikaz.run()
-prikaz=Robot("020001")
-prikaz.run()
-prikaz=Robot("030001")
-prikaz.run()
-prikaz=Robot("040002")
-prikaz.run()
+    while True:
 
-while True:
-    scan = input("Zadej sestimistny kod:")
+        # TODO programatic input
+        # Bud zada uzivatel nebo jako parametr
+        scan = input("Zadej sestimistny kod:")
 
-    if scan == "000000":
-        Konec = input("Nacten ukoncovaci kod. Program se nyni ukonci: (Y/N)")
-        if Konec == "Y" or Konec == "y":
-            print("zvoleno ukonceni programu, nashledanou")
-            break
+        if scan == "000000":
+            Konec = input("Nacten ukoncovaci kod. Program se nyni ukonci: (Y/N)")
+            if Konec == "Y" or Konec == "y":
+                print("zvoleno ukonceni programu, nashledanou")
+                break
+            else:
+                print("Program dale pokracuje")
+        elif len(scan) != 6:
+            print("Spatny format cisla!")
         else:
-            print("Program dale pokracuje")
-    elif len(scan) != 6:
-        print("Spatny format cisla!")
-    else:
-        #print("To by mohlo jit")
-        prikaz=Robot(scan)
-        prikaz.run()
+            # print("To by mohlo jit")
+            robot.change_configuration(scan)
 
-        
+            robot.run()
 
+            # Print result from where its stored
+            result = getattr(robot, robot.attribute)
+            print(result)
 
-print("Program byl uspesne ukoncen")
+    print("Program byl uspesne ukoncen")
