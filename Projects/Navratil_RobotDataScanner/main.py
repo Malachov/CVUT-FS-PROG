@@ -9,11 +9,12 @@ from robot import Robot
 
 #if __name__ == "__main__":
 def proces():
-    print("SPUSTEN PROGRAM OVLADANI ROBOTA \n\nnacteno zakladni nastaveni:\n")
-    
+    print("-------------------------------\nSPUSTEN PROGRAM OVLADANI ROBOTA\n-------------------------------")
+    print("nacteno zakladni nastaveni:\n")
     robot = Robot()
 
     print("\nZmenu parametru lze provest zadanim sestimistneho kodu pro vykonani prikazu\nUkonceni programu se provede zadanim kodu 000000")
+    print("Zobrazeni vsech aktualnich nastaveni se zobrazi kodem 999999")
 
     while True:
 
@@ -29,6 +30,7 @@ def proces():
             else:
                 print("Program dale pokracuje")
         elif scan == "999999":
+            print("Soucasne nastaveni robota:")
             robot.parameters()
         elif len(scan) != 6:
             print("Spatny format cisla!")
@@ -45,5 +47,5 @@ def proces():
             except AttributeError:
                 print("Robot zustal bezezmeny!")
 
-    print("Program byl uspesne ukoncen")
+    print("Program byl uspesne ukoncen\n---------------------------")
 
