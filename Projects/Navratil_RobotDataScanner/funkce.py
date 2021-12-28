@@ -1,4 +1,5 @@
 import pandas as pd
+import logging
 
 def changer(kod: int, soubor: str) -> str:
     if soubor == "recording":
@@ -20,10 +21,12 @@ def find_tab(tabulka: str, cisloradku: int) -> str:
 
     except FileNotFoundError:
         print("Chybi soubor s touto tridou prikazu!")
+        logging.warning("FileNotFoundError")
         return "neni"
 
     except KeyError:
         print("Prikaz neni definovan!")
+        logging.warning("KeyError - command not found")
         return "neni"
 
 def recording(kod: int) -> bool:
@@ -37,6 +40,7 @@ def recording(kod: int) -> bool:
         return nahravani
 
     except UnboundLocalError:
+        logging.warning("UnboundLocalError - command not found")
         print("neznamy kod pro nahravani!")
         return "neni"
 

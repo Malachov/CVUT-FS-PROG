@@ -4,14 +4,14 @@
 # - 2) Vytvorit objekt robota z skriptu main a zavolat prislusnou funci s parametry
 
 from funkce import *
-
+import logging
 
 class Robot:
     def __init__(self) -> None:
         self.err=False
         pass
 
-        self.recording=changer("0002", "recording")
+        self.recording=changer("0001", "recording")
         self.gripper=changer("0001", "gripper_change")
         self.scanner=changer("0001", "scanner_change")
         self.ref_point=changer("0001", "ref_point_change")
@@ -55,7 +55,8 @@ class Robot:
         except KeyError:
             print("neexistujici trida prikazu! Zkus to prosim znovu")
             self.err=True
-
+            logging.warning("CommandClassError")
+            
     def parameters(self):
         i=1
         n=len(self.orders_dict)
