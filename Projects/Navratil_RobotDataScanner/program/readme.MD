@@ -1,1 +1,0 @@
-Program funguje na principu databáze, tedy nejprve dojde k naskenování kódu, poté k jeho vyhodnocení a následné vybrání dalších kroků robota z jiné databáze (např. úprava kalibrace, změna referenčního bodu pro jiný nástroj, provedení sekvence pohybů atd.)
