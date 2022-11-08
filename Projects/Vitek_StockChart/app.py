@@ -95,7 +95,7 @@ class Window(QWidget):
 
         # MAIN LAYOUT
 
-        self.vbox.addWidget(QLabel("Vytvořil Lukáš Vítek, 2022."))
+        self.vbox.addWidget(QLabel("Vytvořil Lukáš Vítek, 2022"))
         self.setLayout(self.vbox)
 
 
