@@ -13,6 +13,7 @@ from PyQt6.QtWidgets import (
     QStyle,
     QSizePolicy,
     QMessageBox,
+    QSpinBox
 )
 from PyQt6.QtGui import QIcon, QFont, QFontDatabase, QPalette, QColor, QPainter
 from PyQt6.QtCore import Qt
@@ -25,9 +26,10 @@ class Window(QWidget):
     def change_stock_ticker(self, ticker: str) -> None:
         self.stock_ticker = ticker
         #print(self.stock_ticker)
-
+    
     def update_stock(self) -> None:
         self.series.clear()
+        self.tm = []
         self.chart.removeAllSeries()
         self.downloadData()
         
@@ -35,7 +37,7 @@ class Window(QWidget):
     stock_ticker = 'AAPL'    
     tm = []  # stores str type data
 
-    def downloadData(self):
+    def downloadData(self) -> None:
         # api key 9FTHOZM5TKJCTYXL
         url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&datatype=csv&symbol='+self.stock_ticker+'&outputsize=compact&apikey=9FTHOZM5TKJCTYXL'
         try:
@@ -49,33 +51,44 @@ class Window(QWidget):
         else:
             print("downloaded")
     
-    def processData(self):
-        
-
+    def processData(self) -> None:
         self.series = QCandlestickSeries()
         self.series.setDecreasingColor(QColor(255,0,0))
         self.series.setIncreasingColor(QColor(0,255,0))
-        
+
+        y_min, y_max = (
+            float("inf"),
+            -float("inf"),
+        )
+
         # process data
         for index, row in self.df.iterrows():
-            #print(row['open'], row['high'], row['low'], row['close'])
-            self.series.append(QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
+            self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
             timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
             self.tm.insert(0,timestamp)
+            y_min = min(y_min, row['open'], row['high'], row['low'], row['close'])
+            y_max = max(y_max, row['open'], row['high'], row['low'], row['close'])
             if index == 20-1: break
         
 
+        
 
         self.chart = QChart()
         self.chart.addSeries(self.series)  # candles
         self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
-        self.chart.createDefaultAxes()
         self.chart.legend().hide()
+        
+        
+        self.axisY = QValueAxis()   # axis Y
+        self.axisY.setMax(y_max)
+        self.axisY.setMin(y_min)
+        self.axisY.show()
+        self.chart.addAxis(self.axisY, Qt.AlignmentFlag.AlignLeft)
+        
 
-        self.axisX = QBarCategoryAxis()
+        self.axisX = QBarCategoryAxis() # axis X
         self.axisX.setLabelsAngle(-90)
         self.axisX.append(self.tm)
-
         self.axisX.show()
         self.chart.addAxis(self.axisX, Qt.AlignmentFlag.AlignBottom)
         self.series.attachAxis(self.axisX)
@@ -83,11 +96,6 @@ class Window(QWidget):
         self.chart.show()
 
         
-        
-        
-        
-        #self.chart.axes(Qt.AlignmentFlag.AlignBottom, self.axisX)
-        #axisX(self.series).setCategories(self.tm)
 
 
     def __init__(self) -> None:
@@ -98,17 +106,22 @@ class Window(QWidget):
         self.vbox = QVBoxLayout()
 
         # STOCK BUTTON AND LINE EDIT
-        
-
         self.stock_symbol_container = QWidget()
         self.stock_symbol_container.setLayout(QHBoxLayout())
 
         btn = QPushButton("Aktualizovat")
         btn.clicked.connect(self.update_stock)
         self.stock_symbol_container.layout().addWidget(btn)
+
         line_edit = QLineEdit(self.stock_ticker)
         line_edit.textChanged.connect(self.change_stock_ticker)
         self.stock_symbol_container.layout().addWidget(line_edit)
+
+        spinbox = QSpinBox()
+        spinbox.setRange(15,100) # number of market days shown allowed
+        spinbox.setValue(20) # set initial value
+        #spinbox.valueChanged.connect(change_market_days)
+        
 
         self.vbox.addWidget(self.stock_symbol_container)
 
