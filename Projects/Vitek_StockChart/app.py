@@ -28,13 +28,17 @@ class Window(QWidget):
         #print(self.stock_ticker)
     
     def update_stock(self) -> None:
-        self.series.clear()
+        #self.series.clear()
         self.tm = []
-        self.chart.removeAllSeries()
+        #self.chart.removeAllSeries()
         self.downloadData()
-        
+    
+    def change_market_days(self, days: int) -> None:
+        self.market_days_shown = days
+        print(self.market_days_shown)
 
-    stock_ticker = 'AAPL'    
+    stock_ticker = 'AAPL'
+    market_days_shown = 20
     tm = []  # stores str type data
 
     def downloadData(self) -> None:
@@ -42,7 +46,7 @@ class Window(QWidget):
         url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&datatype=csv&symbol='+self.stock_ticker+'&outputsize=compact&apikey=9FTHOZM5TKJCTYXL'
         try:
             self.df = pd.read_csv(url)
-            print(self.df)
+            #print(self.df)
             self.processData()
         except KeyError:
             print("nepodařilo se stahnout, špatný ticker")
@@ -68,7 +72,7 @@ class Window(QWidget):
             self.tm.insert(0,timestamp)
             y_min = min(y_min, row['open'], row['high'], row['low'], row['close'])
             y_max = max(y_max, row['open'], row['high'], row['low'], row['close'])
-            if index == 20-1: break
+            if index == self.market_days_shown-1: break
         
 
         
@@ -120,8 +124,8 @@ class Window(QWidget):
         spinbox = QSpinBox()
         spinbox.setRange(15,100) # number of market days shown allowed
         spinbox.setValue(20) # set initial value
-        #spinbox.valueChanged.connect(change_market_days)
-        
+        spinbox.valueChanged.connect(self.change_market_days)
+        self.stock_symbol_container.layout().addWidget(spinbox)
 
         self.vbox.addWidget(self.stock_symbol_container)
 
