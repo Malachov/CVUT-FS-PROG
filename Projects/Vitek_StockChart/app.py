@@ -14,21 +14,68 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QMessageBox,
 )
-from PyQt6.QtGui import QIcon, QFont, QFontDatabase, QPalette, QColor
+from PyQt6.QtGui import QIcon, QFont, QFontDatabase, QPalette, QColor, QPainter
 from PyQt6.QtCore import Qt
-from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet
+from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QBarSeries, QBarSet, QCategoryAxis, QAbstractAxis
+
 
 
 
 class Window(QWidget):
-    def change_stock(self) -> None:
-        self.update_stock()
-        pass
+    def change_stock_ticker(self, ticker: str) -> None:
+        self.stock_ticker = ticker
+        #print(self.stock_ticker)
 
     def update_stock(self) -> None:
-        pass
+        self.downloadData()
+        
 
-    stock_ticker: str = 'BA'
+    stock_ticker = 'AAPL'    
+    tm = []  # stores str type data
+
+    def downloadData(self):
+        # api key 9FTHOZM5TKJCTYXL
+        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&datatype=csv&symbol='+self.stock_ticker+'&outputsize=compact&apikey=9FTHOZM5TKJCTYXL'
+        try:
+            self.df = pd.read_csv(url)
+            print(self.df)
+            self.processData()
+        except KeyError:
+            print("nepodařilo se stahnout, špatný ticker")
+        except:
+            print("nějaká jiná chyba")
+        else:
+            print("downloaded")
+    
+    def processData(self):
+        
+
+        self.series = QCandlestickSeries()
+        self.series.setDecreasingColor(QColor(255,0,0))
+        self.series.setIncreasingColor(QColor(0,255,0))
+        
+        # process data
+        for index, row in self.df.iterrows():
+            #print(row['open'], row['high'], row['low'], row['close'])
+            self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
+            timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
+            self.tm.insert(0,timestamp)
+            if index == 20-1: break
+        
+        self.chart = QChart()
+        self.chart.addSeries(self.series)  # candles
+        self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
+        self.chart.createDefaultAxes()
+        self.chart.legend().hide()
+
+        self.axisX = QAbstractAxis()
+        self.axisX.setLabelsAngle(-90)
+
+        self.axisX.show()
+        self.chart.addAxis(self.axisX, Qt.AlignmentFlag.AlignBottom)
+        
+        #self.chart.axisX(self.series).setCategories(self.tm)
+
 
     def __init__(self) -> None:
         super().__init__()
@@ -44,54 +91,20 @@ class Window(QWidget):
         self.stock_symbol_container.setLayout(QHBoxLayout())
 
         btn = QPushButton("Aktualizovat")
-        btn.clicked.connect(self.change_stock)
+        btn.clicked.connect(self.update_stock)
         self.stock_symbol_container.layout().addWidget(btn)
         line_edit = QLineEdit(self.stock_ticker)
+        line_edit.textChanged.connect(self.change_stock_ticker)
         self.stock_symbol_container.layout().addWidget(line_edit)
 
         self.vbox.addWidget(self.stock_symbol_container)
 
+        self.downloadData()
+
         # VARIABLE GRID
-
-        """ self.variable_store = VariableStore()
-        self.grid_for_variables = GridInput(
-            list(self.variable_store.variables.values())
-        )
-        for iovar in self.variable_store.variables.values():
-            if not iovar.is_input and not iovar.is_header:
-                self.grid_for_variables.set_value(iovar, "")
-
-        self.scroll_area.setVerticalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOn
-        )
-        self.scroll_area.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        )
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setWidget(self.grid_for_variables)
-        self.vbox.sizeHint()
-
-        self.fix_scroll_area_size()
-        self.vbox.addWidget(self.scroll_area)
-
-        # CALCULATE, PRINT, PDF BUTTON
-
-        self.calculate_button_container = QWidget()
-        self.calculate_button_container.setLayout(QHBoxLayout())
-
-        btn = QPushButton("(1) Vypočítej")
-        btn.clicked.connect(self.calculate)
-        self.calculate_button_container.layout().addWidget(btn)
-
-        btn = QPushButton("(2) Vytvoř .tex soubor")
-        btn.clicked.connect(self.create_tex_file)
-        self.calculate_button_container.layout().addWidget(btn)
-
-        btn = QPushButton("(3) pdfLaTeX")
-        btn.clicked.connect(self.run_pdflatex)
-        self.calculate_button_container.layout().addWidget(btn)
-
-        self.vbox.addWidget(self.calculate_button_container) """
+        self.chartview = QChartView(self.chart)
+        self.chartview.setObjectName("chartview")
+        self.vbox.addWidget(self.chartview)
 
         # MAIN LAYOUT
 
@@ -103,4 +116,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = Window()
     window.show()
+    window.resize(800, 600)
+    window.move(300, 100)
     sys.exit(app.exec())
