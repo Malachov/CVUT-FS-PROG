@@ -27,6 +27,8 @@ class Window(QWidget):
         #print(self.stock_ticker)
 
     def update_stock(self) -> None:
+        self.series.clear()
+        self.chart.removeAllSeries()
         self.downloadData()
         
 
@@ -57,11 +59,13 @@ class Window(QWidget):
         # process data
         for index, row in self.df.iterrows():
             #print(row['open'], row['high'], row['low'], row['close'])
-            self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
+            self.series.append(QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
             timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
             self.tm.insert(0,timestamp)
             if index == 20-1: break
         
+
+
         self.chart = QChart()
         self.chart.addSeries(self.series)  # candles
         self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
@@ -74,6 +78,12 @@ class Window(QWidget):
 
         self.axisX.show()
         self.chart.addAxis(self.axisX, Qt.AlignmentFlag.AlignBottom)
+        self.series.attachAxis(self.axisX)
+        
+        self.chart.show()
+
+        
+        
         
         
         #self.chart.axes(Qt.AlignmentFlag.AlignBottom, self.axisX)
