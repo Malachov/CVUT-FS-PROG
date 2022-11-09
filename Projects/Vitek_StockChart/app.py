@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QIcon, QFont, QFontDatabase, QPalette, QColor, QPainter
 from PyQt6.QtCore import Qt
-from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QBarSeries, QBarSet, QCategoryAxis, QAbstractAxis
+from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QBarSeries, QBarSet, QCategoryAxis, QAbstractAxis, QLineSeries
 
 
 
@@ -68,13 +68,16 @@ class Window(QWidget):
         self.chart.createDefaultAxes()
         self.chart.legend().hide()
 
-        self.axisX = QAbstractAxis()
+        self.axisX = QBarCategoryAxis()
         self.axisX.setLabelsAngle(-90)
+        self.axisX.append(self.tm)
 
         self.axisX.show()
         self.chart.addAxis(self.axisX, Qt.AlignmentFlag.AlignBottom)
         
-        #self.chart.axisX(self.series).setCategories(self.tm)
+        
+        #self.chart.axes(Qt.AlignmentFlag.AlignBottom, self.axisX)
+        #axisX(self.series).setCategories(self.tm)
 
 
     def __init__(self) -> None:
