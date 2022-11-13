@@ -25,70 +25,90 @@ from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickS
 class Window(QWidget):
     def change_stock_ticker(self, ticker: str) -> None:
         self.stock_ticker = ticker
-        #print(self.stock_ticker)
-    
+        
     def update_stock(self) -> None:
         self.downloadData()
-        #self.chartview.update()
-        #self.series.append(QCandlestickSet(120,150,105,130))
-        #self.axisX.append(str('12.11.'))
+        self.series.clear()
+        self.axisX.clear()
+        self.processData()
+        self.set_boundaries()
     
     def change_market_days(self, days: int) -> None:
         self.market_days_shown = days
-        #print(self.market_days_shown)
+        self.series.clear()
+        self.axisX.clear()
         self.processData()
-        #self.chartview.update()
+        self.set_boundaries()
 
-    stock_ticker = 'AAPL'
-    market_days_shown = 20
+    stock_ticker = 'BA'    
     tm = []  # stores str type data
+    market_days_shown = 20
 
-    def downloadData(self) -> None:
+    def downloadData(self):
         # api key 9FTHOZM5TKJCTYXL
         url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&datatype=csv&symbol='+self.stock_ticker+'&outputsize=compact&apikey=9FTHOZM5TKJCTYXL'
         try:
             self.df = pd.read_csv(url)
-            #print(self.df)
-            self.processData()
-        except KeyError:
-            print("nepodařilo se stahnout, špatný ticker")
         except:
-            print("nějaká jiná chyba")
+            print("Nepodařilo se stáhnout data")
         else:
-            print("downloaded")
+            print("Downloaded")
     
-    def processData(self) -> None:
-        self.series.clear()
-        self.axisX.clear()
-        self.tm = []
+    def create_series(self):
+        self.series = QCandlestickSeries()
+        self.series.setDecreasingColor(QColor(255,0,0))
+        self.series.setIncreasingColor(QColor(0,255,0))
+    
+    def create_rest(self):
+        self.chart = QChart()
+        self.chart.addSeries(self.series)  # candles
+        #self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
+        self.chart.legend().hide()
 
-        y_min, y_max = (
+        self.axisX = QBarCategoryAxis()
+        self.axisX.setLabelsAngle(-90)
+        self.axisX.append(self.tm)
+
+        self.axisX.show()
+        self.chart.addAxis(self.axisX, Qt.AlignmentFlag.AlignBottom)
+        self.series.attachAxis(self.axisX)
+
+        self.axisY = QValueAxis()   # axis Y
+        self.axisY.show()
+        self.chart.addAxis(self.axisY, Qt.AlignmentFlag.AlignLeft)
+        self.series.attachAxis(self.axisY)
+
+        self.axisY.setMax(self.y_max)
+        self.axisY.setMin(self.y_min)
+        
+
+        self.chart.show()
+
+    def processData(self):
+        self.tm=[]
+        self.y_min, self.y_max = (
             float("inf"),
             -float("inf"),
         )
-        # process data
-        for index, row in self.df.iterrows():
-            self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
-            timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
-            self.tm.insert(0,timestamp)
-            y_min = min(y_min, row['open'], row['high'], row['low'], row['close'])
-            y_max = max(y_max, row['open'], row['high'], row['low'], row['close'])
-            if index == self.market_days_shown-1: break
+        try:
+            for index, row in self.df.iterrows():
+                self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
+                timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
+                self.tm.insert(0,timestamp)
+                self.y_min = min(self.y_min, row['open'], row['high'], row['low'], row['close'])
+                self.y_max = max(self.y_max, row['open'], row['high'], row['low'], row['close'])
+                if index == self.market_days_shown-1: break
+        except KeyError:
+            print("Pravděpodobně je zadaný neplatný ticker")
+            return
         
-        self.axisY.setMax(y_max)
-        self.axisY.setMin(y_min)
         
+    def set_boundaries(self):
         self.axisX.append(self.tm)
-        
-        
-
-
-
-        #print("count:",self.series.count())
-        #self.chart.update()
-        #self.chart.show()
-
-        
+        self.axisY.setMax(self.y_max)
+        self.axisY.setMin(self.y_min)
+        self.axisY.setRange(self.y_min, self.y_max)
+        self.axisY.show()
 
 
     def __init__(self) -> None:
@@ -105,7 +125,6 @@ class Window(QWidget):
         btn = QPushButton("Aktualizovat")
         btn.clicked.connect(self.update_stock)
         self.stock_symbol_container.layout().addWidget(btn)
-
         line_edit = QLineEdit(self.stock_ticker)
         line_edit.textChanged.connect(self.change_stock_ticker)
         self.stock_symbol_container.layout().addWidget(line_edit)
@@ -118,43 +137,19 @@ class Window(QWidget):
 
         self.vbox.addWidget(self.stock_symbol_container)
 
-        self.series = QCandlestickSeries()
-        self.series.setDecreasingColor(QColor(255,0,0))
-        self.series.setIncreasingColor(QColor(0,255,0))
-
-        self.chart = QChart()
-        self.chart.addSeries(self.series)  # candles
-        self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
-        self.chart.legend().hide()
-        
-        self.axisY = QValueAxis()   # axis Y
-        self.axisY.show()
-        self.chart.addAxis(self.axisY, Qt.AlignmentFlag.AlignLeft)
-
-        self.axisX = QBarCategoryAxis() # axis X
-        self.axisX.setLabelsAngle(-90)
-        self.axisX.show()
-        self.chart.addAxis(self.axisX, Qt.AlignmentFlag.AlignBottom)
-        self.series.attachAxis(self.axisX)
-
-
-
         self.downloadData()
-        self.chart.show()
+        self.create_series()
+        self.processData()
+        self.create_rest()
 
         # VARIABLE GRID
         self.chartview = QChartView(self.chart)
-        self.chartview.setUpdatesEnabled(True)
         self.chartview.setObjectName("chartview")
         self.vbox.addWidget(self.chartview)
 
-        
-
         # MAIN LAYOUT
-
         self.vbox.addWidget(QLabel("Vytvořil Lukáš Vítek, 2022"))
         self.setLayout(self.vbox)
-
 
 
 if __name__ == "__main__":
