@@ -113,7 +113,7 @@ class Window(QWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("StockChart")
+        self.setWindowTitle("StockChart v1")
 
         self.scroll_area = QScrollArea()
         self.vbox = QVBoxLayout()
