@@ -7,10 +7,12 @@ This is GitHub of desktop application being developed.
 - [x] process data
 - [x] plot data to candlestick graph
 - [x] let the user choose stock
-  - [ ] implement regex
+  - [x] implement regex
+  - [x] implement wrong stock ticker check
 - [x] update data button
 - [x] let the user choose number of candles in chart (for example plot past 20 days) 
-- [ ] change stock data source to Yahoo Finance
+- [ ] change stock data source to Yahoo Finance (yfinance)
+  - [ ] change QSpinBox to QComboBox because yfinance offers only 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max intervals 
 
 
 

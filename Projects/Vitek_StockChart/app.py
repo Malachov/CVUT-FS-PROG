@@ -27,24 +27,38 @@ class Window(QWidget):
         self.stock_ticker = ticker
         
     def update_stock(self) -> None:
-        self.downloadData()
-        self.series.clear()
-        self.axisX.clear()
-        self.processData()
-        self.set_boundaries()
+        self.download_data()
+        if "Error" in str(self.df.iloc[0]): # wrong stock ticker selected
+            msg_box = QMessageBox(self)
+            msg_box.setWindowTitle("Error!")
+            msg_box.setText("Zadali jste špatný symbol akcie!")
+            button = msg_box.exec()
+
+            if button == QMessageBox.StandardButton.Ok: # set previous working stock ticker and download its data
+                self.line_edit.setText(self.prev_stock_ticker)
+                self.stock_ticker = self.prev_stock_ticker
+                self.download_data()
+                print("OK!")
+        else:
+            self.series.clear()
+            self.axisX.clear()
+            self.process_data()
+            self.set_boundaries()
+            self.prev_stock_ticker = self.stock_ticker
     
     def change_market_days(self, days: int) -> None:
         self.market_days_shown = days
         self.series.clear()
         self.axisX.clear()
-        self.processData()
+        self.process_data()
         self.set_boundaries()
 
-    stock_ticker = 'BA'    
-    tm = []  # stores str type data
+    stock_ticker = 'BA'
+    prev_stock_ticker = stock_ticker 
+    tm = []  # timestamp 
     market_days_shown = 20
 
-    def downloadData(self):
+    def download_data(self) -> None:
         # api key 9FTHOZM5TKJCTYXL
         url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&datatype=csv&symbol='+self.stock_ticker+'&outputsize=compact&apikey=9FTHOZM5TKJCTYXL'
         try:
@@ -54,12 +68,12 @@ class Window(QWidget):
         else:
             print("Downloaded")
     
-    def create_series(self):
+    def create_series(self) -> None:
         self.series = QCandlestickSeries()
         self.series.setDecreasingColor(QColor(255,0,0))
         self.series.setIncreasingColor(QColor(0,128,0))
     
-    def create_rest(self):
+    def create_rest(self) -> None:
         self.chart = QChart()
         self.chart.addSeries(self.series)  # candles
         #self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
@@ -84,9 +98,8 @@ class Window(QWidget):
 
         self.chart.show()
 
-    def processData(self):
-        
-
+    def process_data(self) -> None:
+        """ Process data and sets X and Y axis labels """
         self.tm=[]
         self.y_min, self.y_max = (
             float("inf"),
@@ -101,7 +114,7 @@ class Window(QWidget):
             if index == self.market_days_shown-1: break
         
         
-    def set_boundaries(self):
+    def set_boundaries(self) -> None:
         self.axisX.append(self.tm)
         self.axisY.setMax(self.y_max)
         self.axisY.setMin(self.y_min)
@@ -124,12 +137,12 @@ class Window(QWidget):
         btn.clicked.connect(self.update_stock)
         self.stock_symbol_container.layout().addWidget(btn)
 
-        line_edit = QLineEdit(self.stock_ticker)
-        line_edit.textChanged.connect(self.change_stock_ticker)
-        self.stock_symbol_container.layout().addWidget(line_edit)
+        self.line_edit = QLineEdit(self.stock_ticker)
+        self.line_edit.textChanged.connect(self.change_stock_ticker)
+        self.stock_symbol_container.layout().addWidget(self.line_edit)
         re = QRegularExpression("[A-z]{1,11}")
         validator = QRegularExpressionValidator(re, self)
-        line_edit.setValidator(validator)
+        self.line_edit.setValidator(validator)
         
         
 
@@ -142,9 +155,9 @@ class Window(QWidget):
 
         self.vbox.addWidget(self.stock_symbol_container)
 
-        self.downloadData()
+        self.download_data()
         self.create_series()
-        self.processData()
+        self.process_data()
         self.create_rest()
 
         # VARIABLE GRID
