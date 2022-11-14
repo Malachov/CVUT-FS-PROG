@@ -19,15 +19,15 @@ from PyQt6.QtGui import QIcon, QFont, QColor ,QRegularExpressionValidator
 from PyQt6.QtCore import Qt, QRegularExpression
 from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QLineSeries
 
-
-
-
 class Window(QWidget):
     def change_stock_ticker(self, ticker: str) -> None:
+        """ Changes stock ticker """
         self.stock_ticker = ticker
         
     def update_stock(self) -> None:
+        """ Updates stock data shown in the chart """
         self.download_data()
+        #print(self.df)
         if "Error" in str(self.df.iloc[0]): # wrong stock ticker selected
             msg_box = QMessageBox(self)
             msg_box.setWindowTitle("Error!")
@@ -47,6 +47,7 @@ class Window(QWidget):
             self.prev_stock_ticker = self.stock_ticker
     
     def change_market_days(self, days: int) -> None:
+        """ Changes number of market days shown """
         self.market_days_shown = days
         self.series.clear()
         self.axisX.clear()
@@ -59,6 +60,7 @@ class Window(QWidget):
     market_days_shown = 20
 
     def download_data(self) -> None:
+        """ Downloads data from AlphaVantage server """
         # api key 9FTHOZM5TKJCTYXL
         url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&datatype=csv&symbol='+self.stock_ticker+'&outputsize=compact&apikey=9FTHOZM5TKJCTYXL'
         try:
@@ -69,11 +71,13 @@ class Window(QWidget):
             print("Downloaded")
     
     def create_series(self) -> None:
+        """ Creates QCandlestickSeries """
         self.series = QCandlestickSeries()
         self.series.setDecreasingColor(QColor(255,0,0))
         self.series.setIncreasingColor(QColor(0,128,0))
     
     def create_rest(self) -> None:
+        """ Creates the rest of objects needed """
         self.chart = QChart()
         self.chart.addSeries(self.series)  # candles
         #self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
@@ -99,7 +103,7 @@ class Window(QWidget):
         self.chart.show()
 
     def process_data(self) -> None:
-        """ Process data and sets X and Y axis labels """
+        """ Process data and sets X and Y axes labels """
         self.tm=[]
         self.y_min, self.y_max = (
             float("inf"),
@@ -115,6 +119,7 @@ class Window(QWidget):
         
         
     def set_boundaries(self) -> None:
+        """ Sets boundaries to the X and Y axes objects. """
         self.axisX.append(self.tm)
         self.axisY.setMax(self.y_max)
         self.axisY.setMin(self.y_min)
