@@ -1,6 +1,11 @@
 # StockChart
 
-This is GitHub of desktop application being developed. 
+This is GitHub of desktop application in PyQt 6 being developed. 
+
+<img src="/Projects/Vitek_StockChart/screenshot.jpg" width=50% height=50%>
+
+
+
 
 ### To-Do:
 - [x] get stock data from AlphaVantage
