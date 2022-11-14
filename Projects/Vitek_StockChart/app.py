@@ -15,9 +15,9 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QSpinBox
 )
-from PyQt6.QtGui import QIcon, QFont, QFontDatabase, QPalette, QColor, QPainter
-from PyQt6.QtCore import Qt
-from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QBarSeries, QBarSet, QCategoryAxis, QAbstractAxis, QLineSeries
+from PyQt6.QtGui import QIcon, QFont, QColor ,QRegularExpressionValidator
+from PyQt6.QtCore import Qt, QRegularExpression
+from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QLineSeries
 
 
 
@@ -57,7 +57,7 @@ class Window(QWidget):
     def create_series(self):
         self.series = QCandlestickSeries()
         self.series.setDecreasingColor(QColor(255,0,0))
-        self.series.setIncreasingColor(QColor(0,255,0))
+        self.series.setIncreasingColor(QColor(0,128,0))
     
     def create_rest(self):
         self.chart = QChart()
@@ -85,22 +85,20 @@ class Window(QWidget):
         self.chart.show()
 
     def processData(self):
+        
+
         self.tm=[]
         self.y_min, self.y_max = (
             float("inf"),
             -float("inf"),
         )
-        try:
-            for index, row in self.df.iterrows():
-                self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
-                timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
-                self.tm.insert(0,timestamp)
-                self.y_min = min(self.y_min, row['open'], row['high'], row['low'], row['close'])
-                self.y_max = max(self.y_max, row['open'], row['high'], row['low'], row['close'])
-                if index == self.market_days_shown-1: break
-        except KeyError:
-            print("Pravděpodobně je zadaný neplatný ticker")
-            return
+        for index, row in self.df.iterrows():
+            self.series.insert(0,QCandlestickSet(row['open'], row['high'], row['low'], row['close']))
+            timestamp = str(int(row['timestamp'][8:10]))+'.'+str(row['timestamp'][5:7])+'.'
+            self.tm.insert(0,timestamp)
+            self.y_min = min(self.y_min, row['open'], row['high'], row['low'], row['close'])
+            self.y_max = max(self.y_max, row['open'], row['high'], row['low'], row['close'])
+            if index == self.market_days_shown-1: break
         
         
     def set_boundaries(self):
@@ -125,9 +123,16 @@ class Window(QWidget):
         btn = QPushButton("Aktualizovat")
         btn.clicked.connect(self.update_stock)
         self.stock_symbol_container.layout().addWidget(btn)
+
         line_edit = QLineEdit(self.stock_ticker)
         line_edit.textChanged.connect(self.change_stock_ticker)
         self.stock_symbol_container.layout().addWidget(line_edit)
+        re = QRegularExpression("[A-z]{1,11}")
+        validator = QRegularExpressionValidator(re, self)
+        line_edit.setValidator(validator)
+        
+        
+
 
         spinbox = QSpinBox()
         spinbox.setRange(15,100) # number of market days shown allowed
