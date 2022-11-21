@@ -1,23 +1,18 @@
 import sys
+
 import pandas as pd
-from PyQt6.QtWidgets import (
-    QApplication,
-    QVBoxLayout,
-    QWidget,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QHBoxLayout,
-    QGridLayout,
-    QScrollArea,
-    QStyle,
-    QSizePolicy,
-    QMessageBox,
-    QSpinBox
-)
-from PyQt6.QtGui import QIcon, QFont, QColor ,QRegularExpressionValidator
-from PyQt6.QtCore import Qt, QRegularExpression
-from PyQt6.QtCharts import QCandlestickSeries, QChart, QChartView, QCandlestickSet, QValueAxis, QBarCategoryAxis, QLineSeries
+import qdarktheme
+import darkdetect
+from PyQt6.QtCharts import (QBarCategoryAxis, QCandlestickSeries,
+                            QCandlestickSet, QChart, QChartView, QLineSeries,
+                            QValueAxis)
+from PyQt6.QtCore import QRegularExpression, Qt, QSize
+from PyQt6.QtGui import QColor, QFont, QIcon, QRegularExpressionValidator
+from PyQt6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QMessageBox, QPushButton, QScrollArea,
+                             QSizePolicy, QSpinBox, QStyle, QVBoxLayout,
+                             QWidget)
+
 
 class Window(QWidget):
     def change_stock_ticker(self, ticker: str) -> None:
@@ -82,6 +77,7 @@ class Window(QWidget):
         self.chart.addSeries(self.series)  # candles
         #self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
         self.chart.legend().hide()
+        self.chart.setTheme(QChart.ChartTheme.ChartThemeQt)
 
         self.axisX = QBarCategoryAxis()
         self.axisX.setLabelsAngle(-90)
@@ -177,6 +173,17 @@ class Window(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    #app.setStyleSheet(qdarktheme.load_stylesheet())
+    app.setStyleSheet(qdarktheme.load_stylesheet("light"))
+    
+    app_icon = QIcon()
+    app_icon.addFile('icons/window_icon_16.png', QSize(16,16))
+    app_icon.addFile('icons/window_icon_24.png', QSize(24,24))
+    app_icon.addFile('icons/window_icon_32.png', QSize(32,32))
+    app_icon.addFile('icons/window_icon_48.png', QSize(48,48))
+    app_icon.addFile('icons/window_icon_256.png', QSize(256,256))
+    app.setWindowIcon(app_icon)
+
     window = Window()
     window.show()
     window.resize(800, 600)
