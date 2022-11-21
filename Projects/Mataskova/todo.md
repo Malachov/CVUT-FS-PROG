@@ -11,3 +11,10 @@ Můžete vygenerovat v excelu, ale hůř se vám bude
 
 ## Vytvořit jupyteří notebook prezentující výsledky
 V prvním kroce zde načtěte data a ukažte v tabulce nebo v grafu
+
+
+[] Standardizovat data (pomocí sklearn)
+[] Najít vhodné tutoriály pro binární klasifikaci - Jeden pro decision trees a jeden pro neuronovou síť
+[] Vytvořit validační validační csv (pouze pár manuálně vložených hodnot)
+[] Implementovat tutoriály aby fungovaly na poskytnutých datech
+[] Napsat do README zda model podchytil vložený pattern
