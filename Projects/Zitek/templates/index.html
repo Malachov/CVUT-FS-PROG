@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+
+    <div class="row">
+        <div class="col-auto m-2">
+            <h2>Actual position {{ id }}</h2>
+            <div class="row m-2">
+                <label class="col-1 col-form-label">A1</label>
+                <div class="col-4">
+                    <input class="form-control" type="number" value="86.7" id="A1_textbox" readonly>
+                </div>
+                <label class="col-1 col-form-label">[°]</label>
+            </div>
+            <div class="row m-2">
+                <label class="col-1 col-form-label">A2</label>
+                <div class="col-4">
+                    <input class="form-control" type="number" value="86.7" id="A2_textbox" readonly>
+                </div>
+                <label class="col-1 col-form-label">[°]</label>
+            </div>
+            <div class="row m-2">
+                <label class="col-1 col-form-label">A3</label>
+                <div class="col-4">
+                    <input class="form-control" type="number" value="86.7" id="A3_textbox" readonly>
+                </div>
+                <label class="col-1 col-form-label">[°]</label>
+            </div>
+            <div class="row m-2">
+                <label class="col-1 col-form-label">A4</label>
+                <div class="col-4">
+                    <input class="form-control" type="number" value="86.7" id="A4_textbox" readonly>
+                </div>
+                <label class="col-1 col-form-label">[°]</label>
+            </div>
+            <div class="row m-2">
+                <label class="col-1 col-form-label">A5</label>
+                <div class="col-4">
+                    <input class="form-control" type="number" value="86.7" id="A5_textbox" readonly>
+                </div>
+                <label class="col-1 col-form-label">[°]</label>
+            </div>
+
+
+        </div>
+        <!--div class="col-auto m-2"><img src="../Delta_wire.jpg" class="img-fluid" width="600"></div-->
+        <div class="col-auto m-2">
+            <h2>Go to</h2>
+            <form class="row m-1 align-items-center" onsubmit="sendMessage(event)">
+                <div class="col-auto">
+                    <div class="row m-2">
+                        <label class="col-1 col-form-label">X</label>
+                        <div class="col-4">
+                            <input type="number" class="form-control" id="inputX" step=any required>
+                        </div>
+                        <label class="col-1 col-form-label">[mm]</label>
+                    </div>
+                    <div class="row m-2">
+                        <label class="col-1 col-form-label">Y</label>
+                        <div class="col-4">
+                            <input type="number" class="form-control" id="inputY" step=any required>
+                        </div>
+                        <label class="col-1 col-form-label">[mm]</label>
+                    </div>
+                    <div class="row m-2">
+                        <label class="col-1 col-form-label">Z</label>
+                        <div class="col-4">
+                            <input type="number" class="form-control" id="inputZ" step=any required>
+                        </div>
+                        <label class="col-1 col-form-label">[mm]</label>
+                    </div>
+                    <div class="row m-2">
+                        <label class="col-1 col-form-label">A4</label>
+                        <div class="col-4">
+                            <input type="number" class="form-control" id="inputA4" step=any required>
+                        </div>
+                        <label class="col-1 col-form-label">[°]</label>
+                    </div>
+                    <div class="row m-2">
+                        <label class="col-1 col-form-label">A5</label>
+                        <div class="col-4">
+                            <input type="number" class="form-control" id="inputA5" step=any required>
+                        </div>
+                        <label class="col-1 col-form-label">[°]</label>
+                    </div>
+
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" id="autoSizingSelect">
+                        <option selected value="1">WCS</option>
+                        <option value="2">KCS</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-lg">Go</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <ul id='messages'>
+    </ul>
+    <script>
+        var ws = new WebSocket("ws://localhost:8000/ws");
+        ws.onmessage = function (event) {
+            // var messages = document.getElementById('messages')
+            // var message = document.createElement('li')
+            // var content = document.createTextNode(event.data)
+            // message.appendChild(content)
+            // messages.appendChild(message)
+
+            // console.log(event.data)
+            var message = JSON.parse(event.data)
+            document.getElementById('A1_textbox').value = message.axes[0].pos
+            document.getElementById('A2_textbox').value = message.axes[1].pos
+            document.getElementById('A3_textbox').value = message.axes[2].pos
+            document.getElementById('A4_textbox').value = message.axes[3].pos
+            document.getElementById('A5_textbox').value = message.axes[4].pos
+
+
+
+        };
+        function sendMessage(event) {
+            var input = '{"axes": [{"name":"A1", "pos":' + document.getElementById("inputX").value + '},{"name":"A2", "pos":' + document.getElementById("inputY").value + '},{"name":"A3", "pos":' + document.getElementById("inputZ").value + '},{"name":"A4", "pos":' + document.getElementById("inputA4").value + '},{"name":"A5", "pos":' + document.getElementById("inputA5").value + '}]}'
+            ws.send(input)
+            document.getElementById("inputX").value = ''
+            document.getElementById("inputY").value = ''
+            document.getElementById("inputZ").value = ''
+            document.getElementById("inputA4").value = ''
+            document.getElementById("inputA5").value = ''
+            event.preventDefault()
+        }
+    </script>
+</body>
+
+</html>
