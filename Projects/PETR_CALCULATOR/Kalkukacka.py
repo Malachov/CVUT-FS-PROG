@@ -20,7 +20,7 @@ def add_to_calc(symbol):
     text_res.insert(1.0, calculation)
 
 
-def evaluate_calculation():
+def evaluate_calc():
 
     global calculation
     try:
@@ -90,7 +90,7 @@ butt_close.grid(row=5, column=3,sticky=tk.NSEW)
 butt_dott = tk.Button(root, text=".", command=lambda: add_to_calc("."), width=5, bg=BILA_1, fg=BOARD, font=DEF_FONT_S, borderwidth=0)
 butt_dott.grid(row=6, column=1,sticky=tk.NSEW)
 
-butt_equals = tk.Button(root, text="=", command=evaluate_calculation, width=11, bg=SV_MODRA, fg=BOARD, font=DEF_FONT_S, borderwidth=0)
+butt_equals = tk.Button(root, text="=", command=evaluate_calc, width=11, bg=SV_MODRA, fg=BOARD, font=DEF_FONT_S, borderwidth=0)
 butt_equals.grid(row=6, column=3, columnspan=2,sticky=tk.NSEW)
 butt_clear = tk.Button(root, text="C", command=clear_field, width=5,bg=BILA_1, fg=BOARD, font=DEF_FONT_S, borderwidth=0)
 butt_clear.grid(row=6, column=2,sticky=tk.NSEW)
