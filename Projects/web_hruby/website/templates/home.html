@@ -1,0 +1,117 @@
+<!--look of the Home (HTML) - extension-->
+<!------------------------------>
+
+{% extends "base.html" %} {% block title %}Orders-Fanda3DPrint{% endblock %} {% block content
+    %}
+
+    <!--showing the notes-->
+  <br>
+    <h2 align="center">Orders</h2>
+  <br/>
+    <h3>Standing orders:</h3>
+
+    <!--ASK how to define an empty database for the if condition-->
+    {%if db == 0 %}
+     <p style="color:red;">
+      No existing order so far.
+  <br>Please, create a new one.
+     </p>
+
+    {% else %}
+    <ul class="list-group list-group-flush" id="notes">
+
+      {% for note in user.notes %}
+      <li class="list-group-item">
+        {{ note.data }}
+        <button type="button" class="close" onClick="deleteNote({{ note.id }})">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% endif %}
+  </br>
+
+    
+
+
+    <!--create a new order-->
+    
+    <form method="POST">
+    </br>
+      <h3>Create a new order:</h3>
+
+      <p>Fill-in the following bars properly, please.
+    <br>If needed, you can always delete your order from the list above and create a new one.
+      </p>
+
+      <div class="form-group">
+        <label for="print_name">Print name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="print_name"
+          name="print_name"
+          placeholder="Enter name of your print"
+        />
+      </div>
+
+
+      <div class="form-group">
+        <label for="url">URL Printables (if not on Printables please contact our hotdesk)
+    <br/>
+          <a href="https://www.printables.com/" target="_blank">www.Printables.com</a>
+
+        </label>
+        <input
+          type="url"
+          class="form-control"
+          id="url"
+          name="url"
+          placeholder="Enter URL from printables webpage"
+        />
+      </div>
+
+
+      <div class="form-group">
+        <label for="amount">Number of copies</label>
+        <input
+          type="number"
+          class="form-control"
+          id="amount"
+          name="amount"
+          placeholder="Enter the amount of copies you're ordering"
+        />
+      </div>
+
+
+      <div class="form-group">
+        <label for="address">Delivery address</label>
+        <input
+          type="text"
+          class="form-control"
+          id="address"
+          name="address"
+          placeholder="Enter your address for delivery"
+        />
+      </div>
+
+      <!--add note window-->    
+      <p>Add a note (optional)</p>
+      <textarea name="comment" id="comment" class="form-control"></textarea>
+  <br />
+      
+    
+
+
+  <br />
+
+      <div align="center">
+        <button type="submit" class="btn btn-primary">Add order</button>
+      </div>
+  <br>
+  <br>
+    </form>
+   
+    {% endblock %}

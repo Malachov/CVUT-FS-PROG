@@ -1,0 +1,52 @@
+<!--look of the Sign up (HTML) - extension-->
+<!------------------------------>
+
+{% extends "base.html" %} {% block title %}Sign Up-Fanda3DPrint{% endblock %} {% block
+    content %}
+    <form method="POST">
+    </br>
+      <h2 align="center">Is this your first time? Sign Up!</h2>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="Enter email"
+        />
+      </div>
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="firstName"
+          name="firstName"
+          placeholder="Enter First name"
+        />
+      </div>
+      <div class="form-group">
+        <label for="password1">Password (Should be longer than 6 characters)</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password1"
+          name="password1"
+          placeholder="Enter password"
+        />
+      </div>
+      <div class="form-group">
+        <label for="password2">Confirm password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password2"
+          name="password2"
+          placeholder="Confirm password"
+        />
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary">Sign up</button>
+    </form>
+    {% endblock %}
