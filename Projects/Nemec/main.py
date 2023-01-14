@@ -156,7 +156,7 @@ def main():
                 
                 cv2.circle(frame,tuple(np.int0(p1)),5,(0,255,0),2)
                 cv2.circle(frame,tuple(np.int0(p2)),5,(0,0,255),2)
-                cv2.line(frame,p1,p2,(255,0,0),2)
+                cv2.line(frame,tuple(np.int0(p1)),tuple(np.int0(p2)),(255,0,0),2)
                 
                 
                 (center, shape, angle) = cv2.minAreaRect(cnt)
@@ -223,8 +223,8 @@ def main():
                     coord3[0] = coord3[0] + (-coord2[0] + coord3[0])*1.2
                     coord3[1] = coord3[1] + (-coord2[1] + coord3[1])*1.2
 
-                    cv2.line(frame, np.int0(coord2), np.int0(coord1), (0,0,255), 2)
-                    cv2.line(frame, np.int0(coord2), np.int0(coord3), (0,255,0), 2)
+                    cv2.line(frame, tuple(np.int0(coord2)), tuple(np.int0(coord1)), (0,0,255), 2)
+                    cv2.line(frame, tuple(np.int0(coord2)), tuple(np.int0(coord3)), (0,255,0), 2)
 
                     coord1 = filter_2d_p1.updateEstimate(coord1)
                     coord3 = filter_2d_p3.updateEstimate(coord3)
