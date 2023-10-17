@@ -1,4 +1,0 @@
-PyQt6
-PyQt6-Charts
-pandas
-yfinance
